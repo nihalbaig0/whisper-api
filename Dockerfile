@@ -6,21 +6,19 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+# Copy the app directory
+COPY ./app ./app
 
-# Install Whisper model
+# Install Whisper
 RUN pip install git+https://github.com/openai/whisper.git 
 
-# Expose port
-EXPOSE 8000
+ENV PORT=8000
+EXPOSE ${PORT}
 
-# Run FastAPI application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Update the command to point to the correct module
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
